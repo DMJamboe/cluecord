@@ -1,6 +1,6 @@
-"Candlestick","image/path"
-"Spanner","image/path"
-"Dagger","image/path"
-"Revolver","image/path"
-"Rope","image/path"
-"Lead pipe","image/path"
+Candlestick,image/path
+Spanner,image/path
+Dagger,image/path
+Revolver,image/path
+Rope,image/path
+Lead pipe,image/path

@@ -1,6 +1,6 @@
-"Mrs Peacock","image/path","#0000FF"
-"Rev Green","image/path","#00FF00"
-"Professor Plumb","image/path","#6a0dad "
-"Miss Scarlett","image/path","#FF0000"
-"Colonel Mustard","image/path","#FFFF00"
-"Mrs White","image/path","#FFFFFF"
+Miss Scarlett,image/path,#FF0000
+Mrs Peacock,image/path,#0000FF
+Rev Green,image/path,#00FF00
+Professor Plumb,image/path,#6a0dad
+Colonel Mustard,image/path,#FFFF00
+Mrs White,image/path,"FFFFFF
