@@ -51,7 +51,7 @@ def generateCharacters(filename: str) -> "list[Character]":
         characters = []
         with open(filename, "r") as f:
             for character in f:
-                data = character.split()
+                data = character.split(",")
                 characters.append(Character(data[0], data[1], data[2]))
         return characters
 
@@ -60,7 +60,7 @@ def generateRooms(filename: str) -> "list[Room]":
     rooms = []
     with open(filename, "r") as f:
         for room in f:
-            data = room.split()
+            data = room.split(",")
             rooms.append(Room(data[0], data[1]))
     return rooms
 

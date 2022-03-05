@@ -3,7 +3,8 @@ from cards import Card
 from characters import Character
 from mapping import Map
 from deck import generateDeck, generateCharacters, Deck
-from discord import TextChannel, User
+from discord import TextChannel, User, Embed
+import discord
 
 class Game(object):
     """A game instance."""
@@ -27,8 +28,29 @@ class Game(object):
         self.deck.deal(self.players)
         [player.setRoom(self.map.getStartingRoom()) for player in self.players]
 
-    
+    def nextPlayer(self) -> Player:
+        r = self.players.pop(0)
+        self.players.append(r)
+        return r
 
+    async def turn(self) -> bool:
+        """Takes a turn, returns True if the game has been won."""
+        player = self.nextPlayer()
+
+        # player is presented with options 'Accusation', 'Guess' or 'Move'
+        embed = Embed()
+        accuseButton = discord.ui.Button(style=discord.ButtonStyle.destructive, custom_id="accusebutton")
+        guessButton = discord.ui.Button(style=discord.ButtonStyle.primary, custom_id="guessbutton")
+        moveButton = discord.ui.Button(style=discord.ButtonStyle.secondary, custom_id="movebutton")
+        turnView = discord.ui.View(accuseButton, guessButton, moveButton)
+
+        await self.channel.send(view=turnView)
+
+        # if accusation, player is presented with options of Character, Weapon and Room
+
+        # if guess, player is presented with options of Character and Weapon
+
+        # if move, player is presented with options of rooms to move to
 
 
 class GameManager(object):
