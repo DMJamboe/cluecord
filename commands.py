@@ -9,6 +9,8 @@ from cards import Card
 from game import GameManager, Game
 from characters import Character
 from player import Player
+from weapons import Weapon
+from rooms import Room
 
 def load(bot: commands.Bot):
     @bot.command()
@@ -43,13 +45,37 @@ def load(bot: commands.Bot):
                 game.addPlayer(player)
             currentGame = GameManager.getGame(ctx.channel)
             currentGame.start()
-            await ctx.send("Game started")
+            await ctx.send("Game started.\nPlease check your dm's to see your hand.")
+
+            # DMs players their hand
+            
+            for player in currentGame.players:
+                embed = discord.embeds.Embed()
+                if player.user.dm_channel == None:
+                    await player.user.create_dm()
+                text = "Characters:\n"
+                for card in player.cards:
+                    if isinstance(card, Character):
+                        text += card.name + "\n"
+                text += "\nWeapons:\n"
+                for card in player.cards:
+                    if isinstance(card, Weapon):
+                        text += card.name + "\n"
+                text += "\nRooms:\n"
+                for card in player.cards:
+                    if isinstance(card, Room):
+                        text += card.name + "\n"            
+                embed.add_field(name="Your Hand", value=text)    
+                await player.user.dm_channel.send(embed=embed)
+
             currentGame.map.createMapImage(currentGame.players, ctx.channel.id)
             file = discord.File(str(ctx.channel.id) + ".jpg")
             embed = Embed()
             embed.title = "Board"
             embed.set_image(url="attachment://" + str(ctx.channel.id) + ".jpg")
+
             await ctx.send(file=file, embed=embed)
+
             await GameManager.getGame(ctx.channel).turn()
 
     @game.command()
