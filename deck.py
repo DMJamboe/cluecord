@@ -62,7 +62,7 @@ def generateWeapons(filename: str) -> "list[Weapon]":
     weapons = []
     with open(filename, "r") as f:
         for weapon in f:
-            data = weapon.split()
+            data = weapon.split(",")
             weapons.append(Weapon(data[0], data[1]))
     return weapons
 
