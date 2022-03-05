@@ -22,8 +22,7 @@ bot = commands.Bot(command_prefix="!")
 
 # add bot commands
 botcommands.load(bot) # loads commands defined in the commands module
-
+print("Bot running.")
 # init bot
 bot.run(TOKEN)
 
-print("Bot running.")

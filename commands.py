@@ -14,6 +14,10 @@ def load(bot: commands.Bot):
         await ctx.send("Pong.")
 
     @bot.command()
+    async def pringle(ctx : commands.Context):
+        print("Pringle.")
+
+    @bot.command()
     async def testcard(ctx : commands.Context):
         test = Card("Dagger", f"https://image.invaluable.com/housePhotos/Sofe/87/589087/H20136-L96012319.jpg")
         embed = Embed()
