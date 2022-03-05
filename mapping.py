@@ -1,4 +1,6 @@
 from rooms import Room
+from player import Player
+from discord import TextChannel
 
 class Map(object):
     """The game map."""
@@ -16,6 +18,7 @@ class Map(object):
         ballroom = Room("Ballroom" , "https://static.wikia.nocookie.net/dumbledoresarmyroleplay/images/9/9e/EdinburghBallroom.jpg/revision/latest?cb=20181207051150")
         conservatory = Room("Conservatory", "https://i.pinimg.com/originals/ea/54/40/ea5440f19515177df2274df72465b79c.jpg")
 
+        # Pls ignore how ugly and bad this code is -- all that matters is it works :)
         billiardRoom.addConnection("Foyer", foyer)
         billiardRoom.addConnection("Lounge", lounge)
         billiardRoom.addConnection("Secret Passage", kitchen)
@@ -54,5 +57,10 @@ class Map(object):
         for room in self.rooms:
             result += "\n" + str(room)
         return result
+
+    def createMapImage(self, players : "list[Player]", id : TextChannel):
+        """Creates an image of the current board state, naming the file the id of the text channel currently playing the game"""
+        name = str(TextChannel)
+
 
         
