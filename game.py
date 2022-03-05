@@ -41,7 +41,7 @@ class Game(object):
     def attemptDisprove(self) -> "list":
         for player in self.players[1:]:
             for card in self.accusations:
-                if card in player.cards:
+                if card in [card.getName() for card in player.cards]:
                     return [player, card]
         return [None, None]
 
@@ -114,14 +114,8 @@ async def movementPressed(interaction : discord.Interaction):
     embed.title = "Board"
     embed.set_image(url="attachment://" + str(interaction.channel.id) + ".jpg")
     await interaction.channel.send(file = file, embed = embed, content=currentPlayer.character.name + " has moved into the " + str(currentRoom.connections[buttonID]))
-    
 
 async def guessAction(interaction : discord.Interaction):
-    if interaction.data.get("custom_id") == "guessbutton":
-        characterMenu = discord.ui.Select(custom_id="characterMenu", placeholder=None, min_values=1, max_values=1, options=generateCharacterOptions(), disabled=False, row=None)
-        listView = discord.ui.View(characterMenu)
-        listView.interaction_check = guessAction
-        await interaction.response.send_message(content="> I think it was...", view=listView, ephemeral=True)
     if interaction.data.get("custom_id") == "characterMenu":
         game = GameManager.getGame(interaction.channel)
         game.accusations.append(interaction.data.get("values")[0])
@@ -129,15 +123,26 @@ async def guessAction(interaction : discord.Interaction):
         listView = discord.ui.View(weaponMenu)
         listView.interaction_check = guessAction
         await interaction.response.send_message(content=f"> in the {game.currentPlayer().location.getName()} with the...", view=listView, ephemeral=True)
-    if interaction.data.get("custom_id") == "weaponMenu":
+    elif interaction.data.get("custom_id") == "weaponMenu":
         game = GameManager.getGame(interaction.channel)
         game.accusations.append(interaction.data.get("values")[0])
         game.accusations.append(game.currentPlayer().location.getName())
         await interaction.channel.send(f"I think it was {game.accusations[0]} with the {game.accusations[1]} in the {game.accusations[2]}")
         [player, card] = game.attemptDisprove()
         if player is not None:
-            interaction.channel.send(f"{player.name} whispers to {game.currentPlayer().character.name}")
+            await interaction.channel.send(f"{player.character.name} whispers to {game.currentPlayer().character.name}")
+            await interaction.response.send_message(content=f"I know it wasn't {card}" ,ephemeral=True)
+        else:
+            await interaction.channel.send(f"Nobody can refute this guess.")
+        game.accusations = []
 
+        game.nextPlayer()
+    else:
+        interaction.data.get("custom_id") == "guessbutton"
+        characterMenu = discord.ui.Select(custom_id="characterMenu", placeholder=None, min_values=1, max_values=1, options=generateCharacterOptions(), disabled=False, row=None)
+        listView = discord.ui.View(characterMenu)
+        listView.interaction_check = guessAction
+        await interaction.response.send_message(content="> I think it was...", view=listView, ephemeral=True)
 
 async def accuseAction(interaction : discord.Interaction):
     #take in accusation
