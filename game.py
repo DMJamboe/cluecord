@@ -159,7 +159,7 @@ async def accusationsMade(interaction : discord.Interaction) :
         game = GameManager.getGame(interaction.channel)
         game.accusations.append(interaction.data.get('values')[0])
         print(game.accusations)
-        if game.envelope == game.accusations :
+        if game.envelope[0] == game.accusations[0] and game.envelope[1] == game.accusations[1] and game.envelope[2] == game.accusations[2] :
             await interaction.response.send_message(content="You win!",ephemeral=True)
         else :
             await interaction.response.send_message(content="You don't win!",ephemeral=True)
