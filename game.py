@@ -36,6 +36,7 @@ class Game(object):
     def currentPlayer(self) -> Player:
         return self.players[0]
 
+
     async def turn(self) -> bool:
         """Takes a turn, returns True if the game has been won."""
         player = self.currentPlayer()
@@ -69,7 +70,8 @@ async def turnButtonPressed(interaction : discord.Interaction):
         accuseAction(interaction)
 
 def moveAction(interaction : discord.Interaction):
-    currentGame = GameManager.getGame(discord.Interaction.channel)
+    currentGame = GameManager.getGame(interaction.channel)
+    currentPlayer = 
 
 def guessAction(interaction : discord.Interaction):
     pass
