@@ -3,7 +3,7 @@ import weapons
 import rooms
 import random
 
-class Deck(Object):
+class Deck(object):
     """The deck of cards"""
     def __init__(self, characterList : "list[characters.Character]" , weaponList : "list[weapons.Weapon]", roomList : "list[rooms.Room]"):
         self.cards = []
