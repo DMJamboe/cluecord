@@ -127,7 +127,7 @@ async def accuseAction(interaction : discord.Interaction):
     menuView.interaction_check = accusationsMade
     game = GameManager.getGame(interaction.channel)
     
-    await interaction.channel.send(view=menuView)
+    await interaction.response.send_message(view=menuView, ephemeral=True)
 
     #check if accurate
     #send message to user (and possibly end game)
@@ -140,25 +140,22 @@ async def accusationsMade(interaction : discord.Interaction) :
         game = GameManager.getGame(interaction.channel)
         game.accusations.append(interaction.data.get('values')[0])
         menuView.interaction_check = accusationsMade
-        await interaction.response.defer()
-        await interaction.channel.send(view=menuView)
+        await interaction.response.send_message(view=menuView, ephemeral=True)
     if interaction.data.get("custom_id") == "weaponMenu":
         roomMenu = discord.ui.Select(custom_id="roomMenu", placeholder=None, min_values=1, max_values=1, options=generateRoomOptions(), disabled=False, row=None)
         menuView = discord.ui.View(roomMenu)
         game = GameManager.getGame(interaction.channel)
         game.accusations.append(interaction.data.get('values')[0])
-        await interaction.response.defer()
         menuView.interaction_check = accusationsMade
-        await interaction.channel.send(view=menuView)
+        await interaction.response.send_message(view=menuView, ephemeral=True)
     if interaction.data.get("custom_id") == "roomMenu":
-        await interaction.response.defer()
         game = GameManager.getGame(interaction.channel)
         game.accusations.append(interaction.data.get('values')[0])
         print(game.accusations)
         if game.envelope == game.accusations :
-            await interaction.channel.send(content="You win!")
+            await interaction.response.send_message(content="You win!",ephemeral=True)
         else :
-            await interaction.channel.send(content="You don't win!")
+            await interaction.response.send_message(content="You don't win!",ephemeral=True)
         game.accusations = []
 
 
