@@ -2,7 +2,7 @@ from player import Player
 from cards import Card
 from characters import Character
 from mapping import Map
-from deck import generateDeck, generateCharacters, Deck
+from deck import generateDeck, generateCharacters, Deck, generateRooms, generateWeapons
 from discord import TextChannel, User, Embed
 import discord
 
@@ -63,7 +63,7 @@ async def turnButtonPressed(interaction : discord.Interaction):
     if buttonID == "guessbutton":
         guessAction(interaction)
     if buttonID == "accusebutton":
-        accuseAction(interaction)
+        await accuseAction(interaction)
 
 def moveAction(interaction : discord.Interaction):
     pass
@@ -71,8 +71,51 @@ def moveAction(interaction : discord.Interaction):
 def guessAction(interaction : discord.Interaction):
     pass
 
-def accuseAction(interaction : discord.Interaction):
-    pass
+async def accuseAction(interaction : discord.Interaction):
+    #take in accusation
+    characterMenu = discord.ui.Select(custom_id="characterMenu", placeholder=None, min_values=1, max_values=1, options=generateCharacterOptions(), disabled=False, row=None)
+    #send options to user
+    menuView = discord.ui.View(characterMenu, weaponMenu, roomMenu)
+
+    menuView.interaction_check = None
+
+    await interaction.channel.send(view=menuView)
+
+    #check if accurate
+    #send message to user (and possibly end game)
+    
+
+def generateCharacterOptions() -> "list[discord.SelectOption()]" :
+    """Generate select option list of all characters"""
+    options = []
+    allcharacters = generateCharacters("data/characters.txt")
+
+    for character in allcharacters :
+        options.append(discord.SelectOption(label=character.name, description=None, default=False))
+    
+    return options
+
+def generateWeaponOptions() -> "list[discord.SelectOption()]" :
+    """Generate select option list of all weapons"""
+    options = []
+    allWeapons = generateWeapons("data/weapons.txt")
+
+    for weapon in allWeapons :
+        options.append(discord.SelectOption(label=weapon.name, description=None, default=False))
+    
+    return options
+
+def generateRoomOptions() -> "list[discord.SelectOption()]" :
+    """Generate select option list of all rooms"""
+    options = []
+    allRooms = generateRooms("data/rooms.txt")
+
+    for room in allRooms :
+        options.append(discord.SelectOption(label=room.name, description=None, default=False))
+    
+    return options
+
+
 
 class GameManager(object):
     """Holds all Game instances."""
