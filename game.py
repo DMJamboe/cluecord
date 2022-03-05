@@ -39,10 +39,10 @@ class Game(object):
 
         # player is presented with options 'Accusation', 'Guess' or 'Move'
         embed = Embed()
-        accuseButton = discord.ui.Button(style=discord.ButtonStyle.destructive, custom_id="accusebutton")
-        guessButton = discord.ui.Button(style=discord.ButtonStyle.primary, custom_id="guessbutton")
-        moveButton = discord.ui.Button(style=discord.ButtonStyle.secondary, custom_id="movebutton")
-        turnView = discord.ui.View(accuseButton, guessButton, moveButton)
+        accuseButton = discord.ui.Button(label="Accuse", style=discord.ButtonStyle.danger, custom_id="accusebutton")
+        guessButton = discord.ui.Button(label="Guess", style=discord.ButtonStyle.primary, custom_id="guessbutton")
+        moveButton = discord.ui.Button(label="Move", style=discord.ButtonStyle.secondary, custom_id="movebutton")
+        turnView = discord.ui.View(moveButton, guessButton, accuseButton)
 
         await self.channel.send(view=turnView)
 
