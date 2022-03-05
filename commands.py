@@ -7,6 +7,8 @@ from discord import Embed
 
 from cards import Card
 from game import GameManager, Game
+from characters import Character
+from player import Player
 
 def load(bot: commands.Bot):
     @bot.command()
@@ -63,3 +65,32 @@ def load(bot: commands.Bot):
         testmap = Map("https://media.discordapp.net/attachments/949603786429698048/949640245215920178/Board.png?width=735&height=610")
         print(testmap)
         await ctx.send(str(testmap))
+
+    @bot.command()
+    async def drawtest(ctx: commands.Context):
+        testmap = Map("https://media.discordapp.net/attachments/949603786429698048/949640245215920178/Board.png?width=735&height=610")
+        testmap.testImage()
+        file = discord.File("123.png")
+        embed = Embed()
+        embed.title = "Board"
+        embed.set_image(url="attachment://123.png")
+        await ctx.send(file = file, embed = embed)
+
+    @bot.command()
+    async def drawtest2(ctx: commands.Context):
+        testmap = Map("https://media.discordapp.net/attachments/949603786429698048/949640245215920178/Board.png?width=735&height=610")
+        scarlett = Character("Mrs. Scarlett", "image/path", "#FF0000")
+        plumb = Character("Mr. Plumb", "image/path", "#6a0dad")
+        peacock = Character("Mrs. Peacock", "image/path", "#0000FF")
+        p1 = Player("1", scarlett)
+        p2 = Player("2", plumb)
+        p3 = Player("3", peacock)
+        p1.setRoom(testmap.rooms[2])
+        p2.setRoom(testmap.rooms[7])
+        p3.setRoom(testmap.rooms[7])
+        testmap.createMapImage([p1, p2, p3], "123")
+        file = discord.File("123.png")
+        embed = Embed()
+        embed.title = "Board"
+        embed.set_image(url="attachment://123.png")
+        await ctx.send(file = file, embed = embed)

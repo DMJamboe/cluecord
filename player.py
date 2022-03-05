@@ -16,3 +16,6 @@ class Player(object):
 
     def setRoom(self, room : Room):
         self.location = room
+
+    def getRoom(self):
+        return self.location
