@@ -1,9 +1,11 @@
 from rooms import Room
 from player import Player
 from discord import TextChannel
+from PIL import Image, ImageDraw
 
 class Map(object):
     """The game map."""
+
 
     def __init__(self, imagepath: str):
         self.imagepath = imagepath
@@ -52,6 +54,8 @@ class Map(object):
 
         self.rooms = [billiardRoom, foyer, library, hall, diningRoom, kitchen, lounge, ballroom, conservatory]
 
+        self.roomCoords = {"Billiard Room" : (407, 272)}
+
     def __str__(self):
         result = ""
         for room in self.rooms:
@@ -60,7 +64,10 @@ class Map(object):
 
     def createMapImage(self, players : "list[Player]", id : TextChannel):
         """Creates an image of the current board state, naming the file the id of the text channel currently playing the game"""
-        name = str(TextChannel)
+        with Image.open("Board.png") as board:
+            draw = ImageDraw.Draw(board)
+            draw.regular_polygon(self.roomCoords["Billiard Room"], 1, rotation=0, fill="red", outline=None)
+
 
 
         
