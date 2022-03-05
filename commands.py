@@ -68,14 +68,6 @@ def load(bot: commands.Bot):
                 embed.add_field(name="Your Hand", value=text)    
                 await player.user.dm_channel.send(embed=embed)
 
-            currentGame.map.createMapImage(currentGame.players, ctx.channel.id)
-            file = discord.File(str(ctx.channel.id) + ".jpg")
-            embed = Embed()
-            embed.title = "Board"
-            embed.set_image(url="attachment://" + str(ctx.channel.id) + ".jpg")
-
-            await ctx.send(file=file, embed=embed)
-
             await GameManager.getGame(ctx.channel).turn()
 
     @game.command()
