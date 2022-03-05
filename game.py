@@ -4,13 +4,16 @@ from player import Player
 from deck import Deck
 from rooms import Room
 from weapons import Weapon
+from re import L
+from player import Player
+from deck import Deck
+from discord import TextChannel
 
 class Game(object):
     """A game instance."""
-    def __init__(self, channel : TextChannel):
-        self.channel = channel
+    def __init__(self):
         self.players : list[Player] = []
-        self.deck = generateDeck()
+        self.deck = Deck.generateDeck()
 
     def addPlayer(self, player : Player):
         self.players.append(player)
@@ -28,42 +31,25 @@ class Game(object):
             if i >= len(self.players):
                 i = 0
 
-def generateDeck():
-        """Create a shuffled deck of all cards"""
-        characters = generateCharacters("characters.txt")
-        rooms = generateRooms("rooms.txt")
-        weapons = generateWeapons("weapons.txt")
-        deck = Deck(characters, rooms, weapons)
-        Deck.shuffle(deck)
-        return deck
-    
-def generateCharacters(filename: str):
-        """Create a list of character objects"""
-        characters = []
-        with open(filename, "r") as f:
-            for character in f:
-                data = character.split()
-                characters.append(Character(data[0], data[1], data[2]))
-        return characters
+class GameManager(object):
+    """Holds all Game instances."""
+    games : "dict[TextChannel, Game]" = {}
 
-def generateRooms(filename: str):
-    """Create a list of room objects"""
-    rooms = []
-    with open(filename, "r") as f:
-        for room in f:
-            data = room.split()
-            rooms.append(Room(data[0], data[1]))
-    return rooms
+    @staticmethod
+    def hasGame(channel : TextChannel) -> bool:
+        """Returns true if the GameManager has an instance for the provided channel."""
+        return channel in GameManager.games.keys()
 
-def generateWeapons(filename: str):
-    """Create a list of weapon objects"""
-    weapons = []
-    with open(filename, "r") as f:
-        for weapon in f:
-            data = weapon.split()
-            weapons.append(Weapon(data[0], data[1]))
-    return weapons
+    def createGame(channel : TextChannel) -> Game:
+        """Creates a new Game instance for the provided TextChannel."""
+        newGame : Game = Game()
+        GameManager.games[channel] = newGame
+        return newGame
 
-    
+    def getGame(channel : TextChannel) -> Game:
+        """Returns the Game instance for the provided TextChannel. Returns None if no instance exists."""
+        return GameManager.games.get(channel)
 
-
+    def endGame(channel : TextChannel):
+        """Removes a Game instance from the GameManager."""
+        GameManager.games.pop(channel)

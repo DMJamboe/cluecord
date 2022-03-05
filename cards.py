@@ -7,8 +7,8 @@ class Card(object):
     def __repr__(self):
         return f"Card of {self.name}"
 
-    def getName(self):
+    def getName(self) -> str:
         return self.name
 
-    def getImagePath(self):
+    def getImagePath(self) -> str:
         return self.imagepath
