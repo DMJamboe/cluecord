@@ -36,6 +36,9 @@ class Game(object):
         r = self.players.pop(0)
         self.players.append(r)
         return r
+    
+    def kickCurrentPlayer(self):
+        self.players.pop(0)
 
     def currentPlayer(self) -> Player:
         return self.players[0]
@@ -51,6 +54,14 @@ class Game(object):
     async def turn(self) -> bool:
         """Takes a turn, returns True if the game has been won."""
         player = self.currentPlayer()
+
+        await self.channel.send(content = "It is " + player.user.mention + "'s turn, they are " + player.character.name)
+
+        # Checks if the player has won by default
+        if len(self.players) == 1:
+            await self.channel.send(content = player.user.name + " wins!")
+            GameManager.endGame(self.channel)
+            return
 
         self.map.createMapImage(self.players, self.channel.id)
         file = discord.File(str(self.channel.id) + ".jpg")
@@ -205,10 +216,12 @@ async def accusationsMade(interaction : discord.Interaction) :
         game.accusectr = 0
         print(game.envelope)
         if game.envelope[0].getName() == game.accusations[0] and game.envelope[2].getName() == game.accusations[1] and game.envelope[1].getName() == game.accusations[2] :
-            await interaction.response.send_message(content="You win!",ephemeral=True)
+            await interaction.channel.send(content=game.currentPlayer().character.name + " wins!")
+            GameManager.endGame(interaction.channel)
         else :
-            await interaction.response.send_message(content="You don't win!",ephemeral=True)
-            game.nextPlayer()
+            await interaction.channel.send(content=game.currentPlayer().character.name + " guessed incorrectly! They have been kicked from the game :(")
+
+            game.kickCurrentPlayer()
             await game.turn()
         game.accusations = []
 
