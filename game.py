@@ -93,14 +93,17 @@ async def moveAction(interaction : discord.Interaction):
 async def movementPressed(interaction : discord.Interaction):
     print(interaction.data)
     buttonID = interaction.data.get("custom_id")
-    game = GameManager.getGame(interaction)
-    user = interaction.user
-    if buttonID == "movebutton":
-        await moveAction(interaction)
-    if buttonID == "guessbutton":
-        guessAction(interaction)
-    if buttonID == "accusebutton":
-        accuseAction(interaction)
+    currentGame = GameManager.getGame(interaction.channel)
+    currentPlayer = currentGame.currentPlayer()
+    currentRoom = currentPlayer.getRoom()
+    currentPlayer.setRoom(currentRoom.connections[buttonID])
+    # Update board
+    currentGame.map.createMapImage(currentGame.players, interaction.channel)
+    file = discord.File(str(interaction.channel) + ".png")
+    embed = Embed()
+    embed.title = "Board"
+    embed.set_image(url="attachment://" + str(interaction.channel) + ".png")
+    await interaction.channel.send(file = file, embed = embed, content=currentPlayer.character.name + " has moved into the " + currentRoom.connections[buttonID])
         
 def guessAction(interaction : discord.Interaction):
     pass
