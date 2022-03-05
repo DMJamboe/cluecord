@@ -103,13 +103,6 @@ async def movementPressed(interaction : discord.Interaction):
     buttonID = interaction.data.get("custom_id")
     game = GameManager.getGame(interaction)
     user = interaction.user
-    if buttonID == "movebutton":
-        await moveAction(interaction)
-    if buttonID == "guessbutton":
-        await guessAction(interaction)
-    if buttonID == "accusebutton":
-        await accuseAction(interaction)
-
     currentGame = GameManager.getGame(interaction.channel)
     currentPlayer = currentGame.currentPlayer()
     currentRoom = currentPlayer.getRoom()
@@ -121,7 +114,7 @@ async def movementPressed(interaction : discord.Interaction):
     embed.title = "Board"
     embed.set_image(url="attachment://" + str(interaction.channel.id) + ".jpg")
     await interaction.channel.send(file = file, embed = embed, content=currentPlayer.character.name + " has moved into the " + str(currentRoom.connections[buttonID]))
-        
+    
 
 async def guessAction(interaction : discord.Interaction):
     if interaction.data.get("custom_id") == "guessbutton":
@@ -164,6 +157,7 @@ async def accusationsMade(interaction : discord.Interaction) :
     """Take an accusation and check if valid"""
     if interaction.data.get("custom_id") == "characterMenu":
         weaponMenu = discord.ui.Select(custom_id="weaponMenu", placeholder=None, min_values=1, max_values=1, options=generateWeaponOptions(), disabled=False, row=None)
+        await interaction.response.edit_message(view=None, content="Character submitted")
         menuView = discord.ui.View(weaponMenu)
         game = GameManager.getGame(interaction.channel)
         game.accusations.append(interaction.data.get('values')[0])
@@ -180,7 +174,7 @@ async def accusationsMade(interaction : discord.Interaction) :
         game = GameManager.getGame(interaction.channel)
         game.accusations.append(interaction.data.get('values')[0])
         print(game.accusations)
-        if game.envelope == game.accusations :
+        if game.envelope[0] == game.accusations[0] and game.envelope[1] == game.accusations[1] and game.envelope[2] == game.accusations[2] :
             await interaction.response.send_message(content="You win!",ephemeral=True)
         else :
             await interaction.response.send_message(content="You don't win!",ephemeral=True)

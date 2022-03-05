@@ -11,4 +11,4 @@ class Room(cards.Card):
         self.connections[relpos] = room
 
     def __str__(self):
-        return "Room: " + self.name + "\nConnections: " + str(self.connections)
+        return self.name
