@@ -1,8 +1,12 @@
+from msvcrt import getch
 from re import L
 from player import Player
 from deck import Deck
+from cards import Card
+from characters import getCharacters, Character
+from mapping import Map
 import deck
-from discord import TextChannel
+from discord import TextChannel, User
 
 class Game(object):
     """A game instance."""
@@ -10,12 +14,25 @@ class Game(object):
         self.channel = channel
         self.players : list[Player] = []
         self.deck = deck.generateDeck()
+        self.envelope : tuple[Card] = self.deck.envelope
+        self.characterList : list[Character] = getCharacters()
+        self.map = Map()
 
-    def addPlayer(self, player : Player):
-        self.players.append(player)
+    def __str__(self):
+        return f"Players: {self.players}\nEnvelope: {self.envelope}"
+        
+    def addPlayer(self, user : User):
+        self.players.append(Player(user, self.characterList.pop(0))) # TODO - check character list populated
 
     def start(self):
         """Starts the game, shuffles cards to all players."""
+        self.deck.shuffle()
+        self.deck.deal(self.players)
+        [player.setRoom(self.map.getStartingRoom()) for player in self.players]
+
+    
+
+
 
 class GameManager(object):
     """Holds all Game instances."""

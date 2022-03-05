@@ -62,5 +62,8 @@ class Map(object):
         """Creates an image of the current board state, naming the file the id of the text channel currently playing the game"""
         name = str(TextChannel)
 
+    def getStartingRoom(self):
+        return self.rooms[0]
+
 
         
