@@ -63,6 +63,9 @@ async def turnButtonPressed(interaction : discord.Interaction):
     buttonID = interaction.data.get("custom_id")
     game = GameManager.getGame(interaction.channel)
     user = interaction.user
+    currentPlayer = game.currentPlayer()
+    if user != currentPlayer.user:
+        await interaction.response.send_message(content="It is not your turn.", ephemeral=True)
     action = ""
     if buttonID == "movebutton":
         await moveAction(interaction)
