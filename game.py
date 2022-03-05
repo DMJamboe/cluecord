@@ -102,13 +102,6 @@ async def movementPressed(interaction : discord.Interaction):
     buttonID = interaction.data.get("custom_id")
     game = GameManager.getGame(interaction)
     user = interaction.user
-    if buttonID == "movebutton":
-        await moveAction(interaction)
-    if buttonID == "guessbutton":
-        guessAction(interaction)
-    if buttonID == "accusebutton":
-        await accuseAction(interaction)
-
     currentGame = GameManager.getGame(interaction.channel)
     currentPlayer = currentGame.currentPlayer()
     currentRoom = currentPlayer.getRoom()
@@ -120,7 +113,7 @@ async def movementPressed(interaction : discord.Interaction):
     embed.title = "Board"
     embed.set_image(url="attachment://" + str(interaction.channel.id) + ".jpg")
     await interaction.channel.send(file = file, embed = embed, content=currentPlayer.character.name + " has moved into the " + str(currentRoom.connections[buttonID]))
-        
+    
 
 def guessAction(interaction : discord.Interaction):
     pass
