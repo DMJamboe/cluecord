@@ -31,7 +31,7 @@ class Map(object):
         foyer.addConnection("Library", library)
         foyer.addConnection("Hall", hall)
 
-        library.addConnection("Library", library)
+        library.addConnection("Foyer", foyer)
         library.addConnection("Secret Passage", conservatory)
 
         hall.addConnection("Foyer", foyer)
@@ -90,13 +90,13 @@ class Map(object):
                       "Conservatory" : 0,
                       "Ballroom": 0,
                       "Lounge" : 0}
-        with Image.open("Board.png") as board:
+        with Image.open("Board.jpg") as board:
             draw = ImageDraw.Draw(board)
             for player in players:
                 count = roomCounts[player.getRoom().name]
                 draw.regular_polygon((tuple(map(operator.add, self.roomCoords[player.getRoom().name], self.offsets[count])), 40), 6, rotation=0, fill=player.character.getColour(), outline="black")
                 roomCounts[player.getRoom().name] += 1
-            board.save(str(id) + ".png")
+            board.save(str(id) + ".jpg")
             print("done")
 
     def testImage(self):
@@ -112,8 +112,8 @@ class Map(object):
             draw.regular_polygon((tuple(map(operator.add, self.roomCoords["Lounge"], self.offsets[5])), 40), 6, rotation=0, fill="purple", outline=None)
             board.save("123.png")
 
-
     def getStartingRoom(self):
+        print (self.rooms[0])
         return self.rooms[0]
 
 

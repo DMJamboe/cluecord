@@ -32,18 +32,30 @@ def load(bot: commands.Bot):
         pass
 
     @game.command()
-    async def create(ctx : commands.Context):
+    async def create(ctx : commands.Context, *players : discord.User):
         if GameManager.hasGame(ctx.channel):
             await ctx.send("Game already in play in this channel.")
+        elif len(players) < 1 or len(players) > 6:
+            await ctx.send("Invalid number of players")
         else:
             game = GameManager.createGame(ctx.channel)
+            for player in players:
+                game.addPlayer(player)
             await ctx.send("Created game.")
 
     @game.command()
     async def start(ctx : commands.Context):
         if GameManager.hasGame(ctx.channel):
-            GameManager.getGame(ctx.channel).start()
+            currentGame = GameManager.getGame(ctx.channel)
+            currentGame.start()
             await ctx.send("Game started")
+            currentGame.map.createMapImage(currentGame.players, ctx.channel.id)
+            file = discord.File(str(ctx.channel.id) + ".jpg")
+            embed = Embed()
+            embed.title = "Board"
+            embed.set_image(url="attachment://" + str(ctx.channel.id) + ".jpg")
+            await ctx.send(file=file, embed=embed)
+            await GameManager.getGame(ctx.channel).turn()
         else:
             await ctx.send("No game has been created in this channel")
 
@@ -58,11 +70,6 @@ def load(bot: commands.Bot):
     @game.command()
     async def show(ctx : commands.Context):
         await ctx.send(GameManager.getGame(ctx.channel))
-
-    @game.command()
-    async def join(ctx : commands.Context):
-        GameManager.getGame(ctx.channel).addPlayer(ctx.author)
-        await ctx.send("Joined game.")
 
     @game.command()
     async def turn(ctx : commands.Context):
@@ -102,3 +109,7 @@ def load(bot: commands.Bot):
         embed.title = "Board"
         embed.set_image(url="attachment://123.png")
         await ctx.send(file = file, embed = embed)
+    
+    @bot.command()
+    async def testUserInput(ctx : commands.Context, *users : discord.User):
+        await ctx.send(content=users[1].name)
