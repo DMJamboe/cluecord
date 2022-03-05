@@ -116,13 +116,8 @@ async def movementPressed(interaction : discord.Interaction):
     currentPlayer = currentGame.currentPlayer()
     currentRoom = currentPlayer.getRoom()
     currentPlayer.setRoom(currentRoom.connections[buttonID])
-    # Update board
-    currentGame.map.createMapImage(currentGame.players, interaction.channel.id)
-    file = discord.File(str(interaction.channel.id) + ".jpg")
-    embed = Embed()
-    embed.title = "Board"
-    embed.set_image(url="attachment://" + str(interaction.channel.id) + ".jpg")
-    await interaction.channel.send(file = file, embed = embed, content=currentPlayer.character.name + " has moved into the " + str(currentRoom.connections[buttonID]))
+    currentGame.nextPlayer()
+    await currentGame.turn()
 
 async def guessAction(interaction : discord.Interaction):
     game = GameManager.getGame(interaction.channel)
@@ -153,6 +148,7 @@ async def guessAction(interaction : discord.Interaction):
         game.accusations = []
 
         game.nextPlayer()
+        await currentGame.turn()
     else:
         game.guessctr = 0
         characterMenu = discord.ui.Select(custom_id="characterMenu", placeholder=None, min_values=1, max_values=1, options=generateCharacterOptions(), disabled=False, row=None)
@@ -210,6 +206,8 @@ async def accusationsMade(interaction : discord.Interaction) :
             await interaction.response.send_message(content="You win!",ephemeral=True)
         else :
             await interaction.response.send_message(content="You don't win!",ephemeral=True)
+            currentGame.nextPlayer()
+            await currentGame.turn()
         game.accusations = []
 
 
