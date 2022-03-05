@@ -32,7 +32,7 @@ def load(bot: commands.Bot):
         pass
 
     @game.command()
-    async def create(ctx : commands.Context, *players : discord.User):
+    async def start(ctx : commands.Context, *players : discord.User):
         if GameManager.hasGame(ctx.channel):
             await ctx.send("Game already in play in this channel.")
         elif len(players) < 1 or len(players) > 6:
@@ -41,11 +41,6 @@ def load(bot: commands.Bot):
             game = GameManager.createGame(ctx.channel)
             for player in players:
                 game.addPlayer(player)
-            await ctx.send("Created game.")
-
-    @game.command()
-    async def start(ctx : commands.Context):
-        if GameManager.hasGame(ctx.channel):
             currentGame = GameManager.getGame(ctx.channel)
             currentGame.start()
             await ctx.send("Game started")
@@ -56,8 +51,6 @@ def load(bot: commands.Bot):
             embed.set_image(url="attachment://" + str(ctx.channel.id) + ".jpg")
             await ctx.send(file=file, embed=embed)
             await GameManager.getGame(ctx.channel).turn()
-        else:
-            await ctx.send("No game has been created in this channel")
 
     @game.command()
     async def end(ctx : commands.Context):
