@@ -16,10 +16,12 @@ class Deck(Object):
         #add rooms
         for room in roomList:
             self.cards.append(room)
-    
+
     def shuffle(self):
+        """Shuffle the deck"""
         random.shuffle(self.cards)
 
     def pop(self):
+        """Return the first card from the deck (removing it from the deck)"""
         return self.cards.pop()
 
