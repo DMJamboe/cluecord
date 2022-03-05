@@ -59,20 +59,49 @@ class Game(object):
         # if move, player is presented with options of rooms to move to
 
 async def turnButtonPressed(interaction : discord.Interaction):
+
+    buttonID = interaction.data.get("custom_id")
+    game = GameManager.getGame(interaction.channel)
+    user = interaction.user
+    action = ""
+    if buttonID == "movebutton":
+        await moveAction(interaction)
+        action = "move"
+    if buttonID == "guessbutton":
+        guessAction(interaction)
+        action = "guess"
+    if buttonID == "accusebutton":
+        accuseAction(interaction)
+        action = "accuse"
+    await interaction.message.edit(view=None, content=game.currentPlayer().character.name + " has chosen to " + action)
+
+async def moveAction(interaction : discord.Interaction):
+    currentGame = GameManager.getGame(interaction.channel)
+    currentPlayer = currentGame.currentPlayer()
+    currentRoom = currentPlayer.getRoom()
+    print(currentPlayer)
+    print(currentRoom)
+    embed = Embed()
+    moveView = discord.ui.View()
+    rooms = []
+    for roomKey in currentRoom.connections:
+        moveView.add_item(discord.ui.Button(label=roomKey, style=discord.ButtonStyle.secondary, custom_id=roomKey))
+        rooms.append(currentRoom.connections[roomKey])
+    moveView.interaction_check = movementPressed
+    await interaction.response.send_message(view=moveView, ephemeral=True)
+
+async def movementPressed(interaction : discord.Interaction):
+    print(interaction.data)
     buttonID = interaction.data.get("custom_id")
     game = GameManager.getGame(interaction)
     user = interaction.user
     if buttonID == "movebutton":
-        moveAction(interaction)
+        await moveAction(interaction)
     if buttonID == "guessbutton":
         guessAction(interaction)
     if buttonID == "accusebutton":
         accuseAction(interaction)
-
-def moveAction(interaction : discord.Interaction):
-    currentGame = GameManager.getGame(interaction.channel)
-    currentPlayer = 
-
+        
 def guessAction(interaction : discord.Interaction):
     pass
 
