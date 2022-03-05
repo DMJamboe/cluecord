@@ -11,7 +11,7 @@ class Player(object):
         self.character : Character = character
         self.location : Room = None
 
-    def __str__(self):
+    def __repr__(self):
         return f"User: {self.user}\nCards: {self.cards}\nCharacter: {self.character}\nLocation: {self.location}"
 
     def setRoom(self, room : Room):

@@ -41,12 +41,21 @@ def load(bot: commands.Bot):
         else:
             await ctx.send("There is no game in play in this channel.")
 
+    @game.command()
+    async def show(ctx : commands.Context):
+        await ctx.send(GameManager.getGame(ctx.channel))
+
+    @game.command()
+    async def join(ctx : commands.Context):
+        GameManager.getGame(ctx.channel).addPlayer(ctx.author)
+        await ctx.send("Joined game.")
+
+    @game.command()
+    async def turn(ctx : commands.Context):
+        await GameManager.getGame(ctx.channel).turn()
+
     @bot.command()
     async def maptest(ctx: commands.Context):
         testmap = Map("https://media.discordapp.net/attachments/949603786429698048/949640245215920178/Board.png?width=735&height=610")
         print(testmap)
         await ctx.send(str(testmap))
-
-    @game.command()
-    async def show(ctx : commands.Context):
-        await ctx.send(GameManager.getGame(ctx.channel))
