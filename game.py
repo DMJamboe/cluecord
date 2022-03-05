@@ -44,7 +44,7 @@ class Game(object):
         moveButton = discord.ui.Button(label="Move", style=discord.ButtonStyle.secondary, custom_id="movebutton")
         turnView = discord.ui.View(moveButton, guessButton, accuseButton)
 
-        turnView.interaction_check = 
+        turnView.interaction_check = turnButtonPressed
 
         await self.channel.send(view=turnView)
 
