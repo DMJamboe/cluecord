@@ -66,7 +66,7 @@ async def turnButtonPressed(interaction : discord.Interaction):
         accuseAction(interaction)
 
 def moveAction(interaction : discord.Interaction):
-    pass
+    currentGame = GameManager.getGame(discord.Interaction.channel)
 
 def guessAction(interaction : discord.Interaction):
     pass
