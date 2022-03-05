@@ -136,6 +136,7 @@ async def accusationsMade(interaction : discord.Interaction) :
     """Take an accusation and check if valid"""
     if interaction.data.get("custom_id") == "characterMenu":
         weaponMenu = discord.ui.Select(custom_id="weaponMenu", placeholder=None, min_values=1, max_values=1, options=generateWeaponOptions(), disabled=False, row=None)
+        await interaction.response.edit_message(view=None, content="Character submitted")
         menuView = discord.ui.View(weaponMenu)
         game = GameManager.getGame(interaction.channel)
         game.accusations.append(interaction.data.get('values')[0])
