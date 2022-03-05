@@ -80,8 +80,7 @@ class Map(object):
             result += "\n" + str(room)
         return result
 
-    
-    def createMapImage(self, players : "list[Player]", id):
+    def createMapImage(self, players : "list[Player]", id : str):
         roomCounts = {"Billiard Room" : 0, 
                       "Hall" : 0, 
                       "Foyer" : 0, 
@@ -95,26 +94,22 @@ class Map(object):
             draw = ImageDraw.Draw(board)
             for player in players:
                 count = roomCounts[player.getRoom().name]
-                draw.regular_polygon((tuple(map(operator.add, self.roomCoords[player.getRoom().name], self.offsets[count])), 50), 4, rotation=0, fill=player.character.getColour(), outline="black")
+                draw.regular_polygon((tuple(map(operator.add, self.roomCoords[player.getRoom().name], self.offsets[count])), 40), 6, rotation=0, fill=player.character.getColour(), outline="black")
                 roomCounts[player.getRoom().name] += 1
             board.save(str(id) + ".png")
             print("done")
-
-
-            
-
 
     def testImage(self):
         """Creates an image of the current board state, naming the file the id of the text channel currently playing the game"""
         with Image.open("Board.png") as board:
             draw = ImageDraw.Draw(board)
             #draw.regular_polygon((self.roomCoords["Billiard Room"], 50), 4, rotation=0, fill="green", outline=None)
-            draw.regular_polygon((tuple(map(operator.add, self.roomCoords["Lounge"], self.offsets[0])), 50), 4, rotation=0, fill="red", outline=None)
-            draw.regular_polygon((tuple(map(operator.add, self.roomCoords["Lounge"], self.offsets[1])), 50), 4, rotation=0, fill="green", outline=None)
-            draw.regular_polygon((tuple(map(operator.add, self.roomCoords["Lounge"], self.offsets[2])), 50), 4, rotation=0, fill="blue", outline=None)
-            draw.regular_polygon((tuple(map(operator.add, self.roomCoords["Lounge"], self.offsets[3])), 50), 4, rotation=0, fill="white", outline="black")
-            draw.regular_polygon((tuple(map(operator.add, self.roomCoords["Lounge"], self.offsets[4])), 50), 4, rotation=0, fill="yellow", outline=None)
-            draw.regular_polygon((tuple(map(operator.add, self.roomCoords["Lounge"], self.offsets[5])), 50), 4, rotation=0, fill="purple", outline=None)
+            draw.regular_polygon((tuple(map(operator.add, self.roomCoords["Lounge"], self.offsets[0])), 40), 6, rotation=0, fill="red", outline=None)
+            draw.regular_polygon((tuple(map(operator.add, self.roomCoords["Lounge"], self.offsets[1])), 40), 6, rotation=0, fill="green", outline=None)
+            draw.regular_polygon((tuple(map(operator.add, self.roomCoords["Lounge"], self.offsets[2])), 40), 6, rotation=0, fill="blue", outline=None)
+            draw.regular_polygon((tuple(map(operator.add, self.roomCoords["Lounge"], self.offsets[3])), 40), 6, rotation=0, fill="white", outline="black")
+            draw.regular_polygon((tuple(map(operator.add, self.roomCoords["Lounge"], self.offsets[4])), 40), 6, rotation=0, fill="yellow", outline=None)
+            draw.regular_polygon((tuple(map(operator.add, self.roomCoords["Lounge"], self.offsets[5])), 40), 6, rotation=0, fill="purple", outline=None)
             board.save("123.png")
 
 

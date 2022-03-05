@@ -2,7 +2,7 @@ from player import Player
 from cards import Card
 from characters import Character
 from mapping import Map
-from deck import generateDeck, generateCharacters, Deck
+from deck import generateDeck, generateCharacters, Deck, generateRooms, generateWeapons
 from discord import TextChannel, User, Embed
 import discord
 
@@ -36,6 +36,7 @@ class Game(object):
     def currentPlayer(self) -> Player:
         return self.players[0]
 
+
     async def turn(self) -> bool:
         """Takes a turn, returns True if the game has been won."""
         player = self.currentPlayer()
@@ -58,24 +59,96 @@ class Game(object):
         # if move, player is presented with options of rooms to move to
 
 async def turnButtonPressed(interaction : discord.Interaction):
+
+    buttonID = interaction.data.get("custom_id")
+    game = GameManager.getGame(interaction.channel)
+    user = interaction.user
+    action = ""
+    if buttonID == "movebutton":
+        await moveAction(interaction)
+        action = "move"
+    if buttonID == "guessbutton":
+        guessAction(interaction)
+        action = "guess"
+    if buttonID == "accusebutton":
+        accuseAction(interaction)
+        action = "accuse"
+    await interaction.message.edit(view=None, content=game.currentPlayer().character.name + " has chosen to " + action)
+
+async def moveAction(interaction : discord.Interaction):
+    currentGame = GameManager.getGame(interaction.channel)
+    currentPlayer = currentGame.currentPlayer()
+    currentRoom = currentPlayer.getRoom()
+    print(currentPlayer)
+    print(currentRoom)
+    embed = Embed()
+    moveView = discord.ui.View()
+    rooms = []
+    for roomKey in currentRoom.connections:
+        moveView.add_item(discord.ui.Button(label=roomKey, style=discord.ButtonStyle.secondary, custom_id=roomKey))
+        rooms.append(currentRoom.connections[roomKey])
+    moveView.interaction_check = movementPressed
+    await interaction.response.send_message(view=moveView, ephemeral=True)
+
+async def movementPressed(interaction : discord.Interaction):
+    print(interaction.data)
     buttonID = interaction.data.get("custom_id")
     game = GameManager.getGame(interaction)
     user = interaction.user
     if buttonID == "movebutton":
-        moveAction(interaction)
+        await moveAction(interaction)
     if buttonID == "guessbutton":
         guessAction(interaction)
     if buttonID == "accusebutton":
-        accuseAction(interaction)
-
-def moveAction(interaction : discord.Interaction):
-    pass
-
+        
 def guessAction(interaction : discord.Interaction):
     pass
 
-def accuseAction(interaction : discord.Interaction):
-    pass
+async def accuseAction(interaction : discord.Interaction):
+    #take in accusation
+    characterMenu = discord.ui.Select(custom_id="characterMenu", placeholder=None, min_values=1, max_values=1, options=generateCharacterOptions(), disabled=False, row=None)
+    #send options to user
+    menuView = discord.ui.View(characterMenu, weaponMenu, roomMenu)
+
+    menuView.interaction_check = None
+
+    await interaction.channel.send(view=menuView)
+
+    #check if accurate
+    #send message to user (and possibly end game)
+    
+
+def generateCharacterOptions() -> "list[discord.SelectOption()]" :
+    """Generate select option list of all characters"""
+    options = []
+    allcharacters = generateCharacters("data/characters.txt")
+
+    for character in allcharacters :
+        options.append(discord.SelectOption(label=character.name, description=None, default=False))
+    
+    return options
+
+def generateWeaponOptions() -> "list[discord.SelectOption()]" :
+    """Generate select option list of all weapons"""
+    options = []
+    allWeapons = generateWeapons("data/weapons.txt")
+
+    for weapon in allWeapons :
+        options.append(discord.SelectOption(label=weapon.name, description=None, default=False))
+    
+    return options
+
+def generateRoomOptions() -> "list[discord.SelectOption()]" :
+    """Generate select option list of all rooms"""
+    options = []
+    allRooms = generateRooms("data/rooms.txt")
+
+    for room in allRooms :
+        options.append(discord.SelectOption(label=room.name, description=None, default=False))
+    
+    return options
+
+
 
 class GameManager(object):
     """Holds all Game instances."""

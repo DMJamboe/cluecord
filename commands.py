@@ -32,12 +32,20 @@ def load(bot: commands.Bot):
         pass
 
     @game.command()
-    async def start(ctx : commands.Context):
+    async def create(ctx : commands.Context):
         if GameManager.hasGame(ctx.channel):
             await ctx.send("Game already in play in this channel.")
         else:
-            GameManager.createGame(ctx.channel)
-            await ctx.send("Started game.")
+            game = GameManager.createGame(ctx.channel)
+            await ctx.send("Created game.")
+
+    @game.command()
+    async def start(ctx : commands.Context):
+        if GameManager.hasGame(ctx.channel):
+            GameManager.getGame(ctx.channel).start()
+            await ctx.send("Game started")
+        else:
+            await ctx.send("No game has been created in this channel")
 
     @game.command()
     async def end(ctx : commands.Context):
