@@ -91,29 +91,21 @@ async def moveAction(interaction : discord.Interaction):
     await interaction.response.send_message(view=moveView, ephemeral=True)
 
 async def movementPressed(interaction : discord.Interaction):
+    #await interaction.response.defer()
+    await interaction.response.edit_message(view=None, content="Moving...")
     print(interaction.data)
     buttonID = interaction.data.get("custom_id")
-<<<<<<< HEAD
     currentGame = GameManager.getGame(interaction.channel)
     currentPlayer = currentGame.currentPlayer()
     currentRoom = currentPlayer.getRoom()
     currentPlayer.setRoom(currentRoom.connections[buttonID])
     # Update board
-    currentGame.map.createMapImage(currentGame.players, interaction.channel)
-    file = discord.File(str(interaction.channel) + ".png")
+    currentGame.map.createMapImage(currentGame.players, interaction.channel.id)
+    file = discord.File(str(interaction.channel.id) + ".jpg")
     embed = Embed()
     embed.title = "Board"
-    embed.set_image(url="attachment://" + str(interaction.channel) + ".png")
-    await interaction.channel.send(file = file, embed = embed, content=currentPlayer.character.name + " has moved into the " + currentRoom.connections[buttonID])
-=======
-    game = GameManager.getGame(interaction)
-    user = interaction.user
-    if buttonID == "movebutton":
-        await moveAction(interaction)
-    if buttonID == "guessbutton":
-        guessAction(interaction)
-    if buttonID == "accusebutton":
->>>>>>> abca7ed562d8ef919f78b2497df170337bf704dd
+    embed.set_image(url="attachment://" + str(interaction.channel.id) + ".jpg")
+    await interaction.channel.send(file = file, embed = embed, content=currentPlayer.character.name + " has moved into the " + str(currentRoom.connections[buttonID]))
         
 def guessAction(interaction : discord.Interaction):
     pass
