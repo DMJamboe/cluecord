@@ -1,5 +1,4 @@
 import cards
-from deck import generateCharacters
 
 class Character(cards.Card):
     """Represents an in-game character (not an actual player)."""
@@ -9,6 +8,3 @@ class Character(cards.Card):
 
     def getColour(self):
         return self.colour
-
-def getCharacters():
-    return generateCharacters()

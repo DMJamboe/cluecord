@@ -80,8 +80,8 @@ def generateEnvelope(characterList : "list[Character]" , weaponList : "list[Weap
     random.shuffle(characterList)
     random.shuffle(weaponList)
     random.shuffle(roomList)
-    self.envelope.append(characterList.pop())
-    self.envelope.append(weaponList.pop())
-    self.envelope.append(roomList.pop())
+    envelope.append(characterList.pop())
+    envelope.append(weaponList.pop())
+    envelope.append(roomList.pop())
 
     return envelope

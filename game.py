@@ -1,11 +1,8 @@
-from msvcrt import getch
-from re import L
 from player import Player
-from deck import Deck
 from cards import Card
-from characters import getCharacters, Character
+from characters import Character
 from mapping import Map
-import deck
+from deck import generateDeck, generateCharacters, Deck
 from discord import TextChannel, User
 
 class Game(object):
@@ -13,10 +10,10 @@ class Game(object):
     def __init__(self, channel : TextChannel):
         self.channel = channel
         self.players : list[Player] = []
-        self.deck = deck.generateDeck()
+        self.deck = generateDeck()
         self.envelope : tuple[Card] = self.deck.envelope
-        self.characterList : list[Character] = getCharacters()
-        self.map = Map()
+        self.characterList : list[Character] = generateCharacters("data/characters.txt")
+        self.map = Map("https://media.discordapp.net/attachments/949603786429698048/949685135538806854/Board.png?width=757&height=607")
 
     def __str__(self):
         return f"Players: {self.players}\nEnvelope: {self.envelope}"
