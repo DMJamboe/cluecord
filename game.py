@@ -150,6 +150,7 @@ async def guessAction(interaction : discord.Interaction):
             await interaction.response.send_message(content=f"I know it wasn't {card}" ,ephemeral=True)
         else:
             await interaction.channel.send(f"Nobody can refute this guess.")
+            await interaction.response.defer()
         game.accusations = []
 
         game.nextPlayer()
@@ -206,7 +207,7 @@ async def accusationsMade(interaction : discord.Interaction) :
         game.accusations.append(interaction.data.get('values')[0])
         print(game.accusations)
         game.accusectr = 0
-        if game.envelope[0] == game.accusations[0] and game.envelope[1] == game.accusations[1] and game.envelope[2] == game.accusations[2] :
+        if game.envelope[0].getName() == game.accusations[0] and game.envelope[1].getName() == game.accusations[1] and game.envelope[2].getName() == game.accusations[2] :
             await interaction.response.send_message(content="You win!",ephemeral=True)
         else :
             await interaction.response.send_message(content="You don't win!",ephemeral=True)
