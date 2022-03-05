@@ -82,15 +82,11 @@ def load(bot: commands.Bot):
         p2 = Player("2", plumb)
         p3 = Player("3", peacock)
         p1.setRoom(testmap.rooms[2])
-        p2.setRoom(testmap.rooms[2])
-        p3.setRoom(testmap.rooms[4])
+        p2.setRoom(testmap.rooms[7])
+        p3.setRoom(testmap.rooms[7])
         testmap.createMapImage([p1, p2, p3], "123")
         file = discord.File("123.png")
         embed = Embed()
         embed.title = "Board"
         embed.set_image(url="attachment://123.png")
         await ctx.send(file = file, embed = embed)
-
-    @game.command()
-    async def show(ctx : commands.Context):
-        await ctx.send(GameManager.getGame(ctx.channel))
