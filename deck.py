@@ -8,6 +8,9 @@ class Deck(object):
     """The deck of cards"""
     def __init__(self, characterList : "list[Character]" , weaponList : "list[Weapon]", roomList : "list[Room]"):
         self.cards = []
+        self.envelope = generateEnvelope(characterList , weaponList, roomList)
+        
+
         #add characters
         for character in characterList:
             self.cards.append(character)
@@ -63,3 +66,15 @@ def generateWeapons(filename: str) -> "list[Weapon]":
             weapons.append(Weapon(data[0], data[1]))
     return weapons
 
+def generateEnvelope(characterList : "list[Character]" , weaponList : "list[Weapon]", roomList : "list[Room]"):
+    """Generate an envelope of form [Character, Weapon, Room]"""
+    envelope = []
+    #create envelope
+    random.shuffle(characterList)
+    random.shuffle(weaponList)
+    random.shuffle(roomList)
+    self.envelope.append(characterList.pop())
+    self.envelope.append(weaponList.pop())
+    self.envelope.append(roomList.pop())
+
+    return envelope
