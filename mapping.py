@@ -69,5 +69,8 @@ class Map(object):
             draw.regular_polygon(self.roomCoords["Billiard Room"], 1, rotation=0, fill="red", outline=None)
 
 
+    def getStartingRoom(self):
+        return self.rooms[0]
+
 
         

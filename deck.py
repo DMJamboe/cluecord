@@ -1,13 +1,16 @@
-import imp
 from characters import Character
 from weapons import Weapon
 from rooms import Room
 import random
+from player import Player
 
 class Deck(object):
     """The deck of cards"""
     def __init__(self, characterList : "list[Character]" , weaponList : "list[Weapon]", roomList : "list[Room]"):
         self.cards = []
+        self.envelope = generateEnvelope(characterList , weaponList, roomList)
+        
+
         #add characters
         for character in characterList:
             self.cards.append(character)
@@ -26,12 +29,19 @@ class Deck(object):
         """Return the first card from the deck (removing it from the deck)"""
         return self.cards.pop()
 
+    def deal(self, players : "list[Player]"):
+        """Evenly distributes cards to a list of players."""
+        i = 0
+        while (len(self.cards) > 0):
+            players[i%len(players)].cards.append(self.pop())
+            i += 1
+
     
 def generateDeck() -> Deck:
         """Create a shuffled deck of all cards"""
-        characters = generateCharacters("characters.txt")
-        rooms = generateRooms("rooms.txt")
-        weapons = generateWeapons("weapons.txt")
+        characters = generateCharacters("data/characters.txt")
+        rooms = generateRooms("data/rooms.txt")
+        weapons = generateWeapons("data/weapons.txt")
         deck = Deck(characters, rooms, weapons)
         Deck.shuffle(deck)
         return deck
@@ -63,3 +73,15 @@ def generateWeapons(filename: str) -> "list[Weapon]":
             weapons.append(Weapon(data[0], data[1]))
     return weapons
 
+def generateEnvelope(characterList : "list[Character]" , weaponList : "list[Weapon]", roomList : "list[Room]"):
+    """Generate an envelope of form [Character, Weapon, Room]"""
+    envelope = []
+    #create envelope
+    random.shuffle(characterList)
+    random.shuffle(weaponList)
+    random.shuffle(roomList)
+    self.envelope.append(characterList.pop())
+    self.envelope.append(weaponList.pop())
+    self.envelope.append(roomList.pop())
+
+    return envelope
