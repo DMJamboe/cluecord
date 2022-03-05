@@ -33,9 +33,12 @@ class Game(object):
         self.players.append(r)
         return r
 
+    def currentPlayer(self) -> Player:
+        return self.players[0]
+
     async def turn(self) -> bool:
         """Takes a turn, returns True if the game has been won."""
-        player = self.nextPlayer()
+        player = self.currentPlayer()
 
         # player is presented with options 'Accusation', 'Guess' or 'Move'
         embed = Embed()
