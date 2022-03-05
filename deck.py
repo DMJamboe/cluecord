@@ -1,8 +1,8 @@
-import imp
 from characters import Character
 from weapons import Weapon
 from rooms import Room
 import random
+from player import Player
 
 class Deck(object):
     """The deck of cards"""
@@ -28,6 +28,13 @@ class Deck(object):
     def pop(self):
         """Return the first card from the deck (removing it from the deck)"""
         return self.cards.pop()
+
+    def deal(self, players : "list[Player]"):
+        """Evenly distributes cards to a list of players."""
+        i = 0
+        while (len(self.cards) > 0):
+            players[i%len(players)].cards.append(self.pop())
+            i += 1
 
     
 def generateDeck() -> Deck:

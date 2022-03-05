@@ -40,7 +40,13 @@ def load(bot: commands.Bot):
             await ctx.send("Game ended.")
         else:
             await ctx.send("There is no game in play in this channel.")
+
+    @bot.command()
     async def maptest(ctx: commands.Context):
         testmap = Map("https://media.discordapp.net/attachments/949603786429698048/949640245215920178/Board.png?width=735&height=610")
         print(testmap)
         await ctx.send(str(testmap))
+
+    @game.command()
+    async def show(ctx : commands.Context):
+        await ctx.send(GameManager.getGame(ctx.channel))
