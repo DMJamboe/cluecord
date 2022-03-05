@@ -1,3 +1,4 @@
+from tkinter import Button
 from player import Player
 from cards import Card
 from characters import Character
@@ -15,6 +16,7 @@ class Game(object):
         self.envelope : tuple[Card] = self.deck.envelope
         self.characterList : list[Character] = generateCharacters("data/characters.txt")
         self.map = Map("https://media.discordapp.net/attachments/949603786429698048/949685135538806854/Board.png?width=757&height=607")
+        self.accusations = []
 
     def __str__(self):
         return f"Players: {self.players}\nEnvelope: {self.envelope}"
@@ -74,7 +76,7 @@ async def turnButtonPressed(interaction : discord.Interaction):
         guessAction(interaction)
         action = "guess"
     if buttonID == "accusebutton":
-        accuseAction(interaction)
+        await accuseAction(interaction)
         action = "accuse"
     await interaction.message.edit(view=None, content=game.currentPlayer().character.name + " has chosen to " + action)
 
@@ -98,6 +100,15 @@ async def movementPressed(interaction : discord.Interaction):
     await interaction.response.edit_message(view=None, content="Moving...")
     print(interaction.data)
     buttonID = interaction.data.get("custom_id")
+    game = GameManager.getGame(interaction)
+    user = interaction.user
+    if buttonID == "movebutton":
+        await moveAction(interaction)
+    if buttonID == "guessbutton":
+        guessAction(interaction)
+    if buttonID == "accusebutton":
+        await accuseAction(interaction)
+
     currentGame = GameManager.getGame(interaction.channel)
     currentPlayer = currentGame.currentPlayer()
     currentRoom = currentPlayer.getRoom()
@@ -110,22 +121,58 @@ async def movementPressed(interaction : discord.Interaction):
     embed.set_image(url="attachment://" + str(interaction.channel.id) + ".jpg")
     await interaction.channel.send(file = file, embed = embed, content=currentPlayer.character.name + " has moved into the " + str(currentRoom.connections[buttonID]))
         
+
 def guessAction(interaction : discord.Interaction):
     pass
 
 async def accuseAction(interaction : discord.Interaction):
     #take in accusation
     characterMenu = discord.ui.Select(custom_id="characterMenu", placeholder=None, min_values=1, max_values=1, options=generateCharacterOptions(), disabled=False, row=None)
+
     #send options to user
-    menuView = discord.ui.View(characterMenu, weaponMenu, roomMenu)
-
-    menuView.interaction_check = None
-
+    menuView = discord.ui.View(characterMenu)
+    menuView.interaction_check = accusationsMade
+    game = GameManager.getGame(interaction.channel)
+    
     await interaction.channel.send(view=menuView)
 
     #check if accurate
     #send message to user (and possibly end game)
     
+async def accusationsMade(interaction : discord.Interaction) :
+    """Take an accusation and check if valid"""
+    if interaction.data.get("custom_id") == "characterMenu":
+        weaponMenu = discord.ui.Select(custom_id="weaponMenu", placeholder=None, min_values=1, max_values=1, options=generateWeaponOptions(), disabled=False, row=None)
+        menuView = discord.ui.View(weaponMenu)
+        game = GameManager.getGame(interaction.channel)
+        game.accusations.append(interaction.data.get('values')[0])
+        menuView.interaction_check = accusationsMade
+        await interaction.response.defer()
+        await interaction.channel.send(view=menuView)
+    if interaction.data.get("custom_id") == "weaponMenu":
+        roomMenu = discord.ui.Select(custom_id="roomMenu", placeholder=None, min_values=1, max_values=1, options=generateRoomOptions(), disabled=False, row=None)
+        menuView = discord.ui.View(roomMenu)
+        game = GameManager.getGame(interaction.channel)
+        game.accusations.append(interaction.data.get('values')[0])
+        await interaction.response.defer()
+        menuView.interaction_check = accusationsMade
+        await interaction.channel.send(view=menuView)
+    if interaction.data.get("custom_id") == "roomMenu":
+        await interaction.response.defer()
+        game = GameManager.getGame(interaction.channel)
+        game.accusations.append(interaction.data.get('values')[0])
+        print(game.accusations)
+        if game.envelope == game.accusations :
+            await interaction.channel.send(content="You win!")
+        else :
+            await interaction.channel.send(content="You don't win!")
+        game.accusations = []
+
+
+
+
+        
+
 
 def generateCharacterOptions() -> "list[discord.SelectOption()]" :
     """Generate select option list of all characters"""
@@ -156,8 +203,6 @@ def generateRoomOptions() -> "list[discord.SelectOption()]" :
         options.append(discord.SelectOption(label=room.name, description=None, default=False))
     
     return options
-
-
 
 class GameManager(object):
     """Holds all Game instances."""
