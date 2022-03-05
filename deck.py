@@ -29,9 +29,9 @@ class Deck(object):
     
 def generateDeck() -> Deck:
         """Create a shuffled deck of all cards"""
-        characters = generateCharacters("characters.txt")
-        rooms = generateRooms("rooms.txt")
-        weapons = generateWeapons("weapons.txt")
+        characters = generateCharacters("data/characters.txt")
+        rooms = generateRooms("data/rooms.txt")
+        weapons = generateWeapons("data/weapons.txt")
         deck = Deck(characters, rooms, weapons)
         Deck.shuffle(deck)
         return deck

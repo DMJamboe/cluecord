@@ -1,35 +1,21 @@
-from hashlib import new
-from cluecord.characters import Character
-from player import Player
-from deck import Deck
-from rooms import Room
-from weapons import Weapon
 from re import L
 from player import Player
 from deck import Deck
+import deck
 from discord import TextChannel
 
 class Game(object):
     """A game instance."""
-    def __init__(self):
+    def __init__(self, channel : TextChannel):
+        self.channel = channel
         self.players : list[Player] = []
-        self.deck = Deck.generateDeck()
+        self.deck = deck.generateDeck()
 
     def addPlayer(self, player : Player):
         self.players.append(player)
 
     def start(self):
         """Starts the game, shuffles cards to all players."""
-        i = 0
-        #for each card in deck
-        while len(self.deck) > 0:
-            #deal one to a player
-            self.players[i].cards.append(Deck.pop(self.deck))
-            #move onto next player
-            i = i + 1
-            #cycle back to original once end is reached
-            if i >= len(self.players):
-                i = 0
 
 class GameManager(object):
     """Holds all Game instances."""
@@ -42,7 +28,7 @@ class GameManager(object):
 
     def createGame(channel : TextChannel) -> Game:
         """Creates a new Game instance for the provided TextChannel."""
-        newGame : Game = Game()
+        newGame : Game = Game(channel)
         GameManager.games[channel] = newGame
         return newGame
 
