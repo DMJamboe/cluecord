@@ -38,6 +38,13 @@ class Game(object):
     def currentPlayer(self) -> Player:
         return self.players[0]
 
+    def attemptDisprove(self) -> "list":
+        for player in self.players[1:]:
+            for card in self.accusations:
+                if card in player.cards:
+                    return [player, card]
+        return [None, None]
+
 
     async def turn(self) -> bool:
         """Takes a turn, returns True if the game has been won."""
@@ -54,12 +61,6 @@ class Game(object):
 
         await self.channel.send(view=turnView)
 
-        # if accusation, player is presented with options of Character, Weapon and Room
-
-        # if guess, player is presented with options of Character and Weapon
-
-        # if move, player is presented with options of rooms to move to
-
 async def turnButtonPressed(interaction : discord.Interaction):
 
     buttonID = interaction.data.get("custom_id")
@@ -73,7 +74,7 @@ async def turnButtonPressed(interaction : discord.Interaction):
         await moveAction(interaction)
         action = "move"
     if buttonID == "guessbutton":
-        guessAction(interaction)
+        await guessAction(interaction)
         action = "guess"
     if buttonID == "accusebutton":
         await accuseAction(interaction)
@@ -105,7 +106,7 @@ async def movementPressed(interaction : discord.Interaction):
     if buttonID == "movebutton":
         await moveAction(interaction)
     if buttonID == "guessbutton":
-        guessAction(interaction)
+        await guessAction(interaction)
     if buttonID == "accusebutton":
         await accuseAction(interaction)
 
@@ -122,8 +123,28 @@ async def movementPressed(interaction : discord.Interaction):
     await interaction.channel.send(file = file, embed = embed, content=currentPlayer.character.name + " has moved into the " + str(currentRoom.connections[buttonID]))
         
 
-def guessAction(interaction : discord.Interaction):
-    pass
+async def guessAction(interaction : discord.Interaction):
+    if interaction.data.get("custom_id") == "guessbutton":
+        characterMenu = discord.ui.Select(custom_id="characterMenu", placeholder=None, min_values=1, max_values=1, options=generateCharacterOptions(), disabled=False, row=None)
+        listView = discord.ui.View(characterMenu)
+        listView.interaction_check = guessAction
+        await interaction.response.send_message(content="> I think it was...", view=listView, ephemeral=True)
+    if interaction.data.get("custom_id") == "characterMenu":
+        game = GameManager.getGame(interaction.channel)
+        game.accusations.append(interaction.data.get("values")[0])
+        weaponMenu = discord.ui.Select(custom_id="weaponMenu", placeholder=None, min_values=1, max_values=1, options=generateWeaponOptions(), disabled=False, row=None)
+        listView = discord.ui.View(weaponMenu)
+        listView.interaction_check = guessAction
+        await interaction.response.send_message(content=f"> in the {game.currentPlayer().location.getName()} with the...", view=listView, ephemeral=True)
+    if interaction.data.get("custom_id") == "weaponMenu":
+        game = GameManager.getGame(interaction.channel)
+        game.accusations.append(interaction.data.get("values")[0])
+        game.accusations.append(game.currentPlayer().location.getName())
+        await interaction.channel.send(f"I think it was {game.accusations[0]} with the {game.accusations[1]} in the {game.accusations[2]}")
+        [player, card] = game.attemptDisprove()
+        if player is not None:
+            interaction.channel.send(f"{player.name} whispers to {game.currentPlayer().character.name}")
+
 
 async def accuseAction(interaction : discord.Interaction):
     #take in accusation
