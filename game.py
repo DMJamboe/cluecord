@@ -44,6 +44,8 @@ class Game(object):
         moveButton = discord.ui.Button(label="Move", style=discord.ButtonStyle.secondary, custom_id="movebutton")
         turnView = discord.ui.View(moveButton, guessButton, accuseButton)
 
+        turnView.interaction_check = 
+
         await self.channel.send(view=turnView)
 
         # if accusation, player is presented with options of Character, Weapon and Room
@@ -52,6 +54,25 @@ class Game(object):
 
         # if move, player is presented with options of rooms to move to
 
+async def turnButtonPressed(interaction : discord.Interaction):
+    buttonID = interaction.data.get("custom_id")
+    game = GameManager.getGame(interaction)
+    user = interaction.user
+    if buttonID == "movebutton":
+        moveAction(interaction)
+    if buttonID == "guessbutton":
+        guessAction(interaction)
+    if buttonID == "accusebutton":
+        accuseAction(interaction)
+
+def moveAction(interaction : discord.Interaction):
+    pass
+
+def guessAction(interaction : discord.Interaction):
+    pass
+
+def accuseAction(interaction : discord.Interaction):
+    pass
 
 class GameManager(object):
     """Holds all Game instances."""
