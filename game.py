@@ -149,7 +149,7 @@ async def guessAction(interaction : discord.Interaction):
         game.accusations = []
 
         game.nextPlayer()
-        await currentGame.turn()
+        await game.turn()
     else:
         game.guessctr = 0
         characterMenu = discord.ui.Select(custom_id="characterMenu", placeholder=None, min_values=1, max_values=1, options=generateCharacterOptions(), disabled=False, row=None)
@@ -203,12 +203,13 @@ async def accusationsMade(interaction : discord.Interaction) :
         game.accusations.append(interaction.data.get('values')[0])
         print(game.accusations)
         game.accusectr = 0
-        if game.envelope[0].getName() == game.accusations[0] and game.envelope[1].getName() == game.accusations[1] and game.envelope[2].getName() == game.accusations[2] :
+        print(game.envelope)
+        if game.envelope[0].getName() == game.accusations[0] and game.envelope[2].getName() == game.accusations[1] and game.envelope[1].getName() == game.accusations[2] :
             await interaction.response.send_message(content="You win!",ephemeral=True)
         else :
             await interaction.response.send_message(content="You don't win!",ephemeral=True)
-            currentGame.nextPlayer()
-            await currentGame.turn()
+            game.nextPlayer()
+            await game.turn()
         game.accusations = []
 
 
