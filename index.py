@@ -18,7 +18,7 @@ handler.setFormatter(logging.Formatter("%(asctime)s:%(levelname)s:%(name)s: %(me
 logger.addHandler(handler)
 
 # set up bot
-bot = commands.Bot(command_prefix=";")
+bot = commands.Bot(command_prefix="!")
 
 # add bot commands
 botcommands.load(bot) # loads commands defined in the commands module
