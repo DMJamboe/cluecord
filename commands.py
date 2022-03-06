@@ -45,6 +45,11 @@ def load(bot: commands.Bot):
                 if player in [player.user for player in game.players]:
                     await ctx.send("Cannot have more than one of the same player in one game!")
                     GameManager.endGame(ctx.channel)
+                    return
+                if GameManager.gameOf(player) != None:
+                    await ctx.send("Cannot have users in multiple games at once!")
+                    GameManager.endGame(ctx.channel)
+                    return
                 game.addPlayer(player)
             currentGame = GameManager.getGame(ctx.channel)
 
@@ -55,21 +60,26 @@ def load(bot: commands.Bot):
             
             for player in currentGame.players:
                 embed = discord.embeds.Embed()
+                embed.title = player.character.getName()
+                embed.description = "I can disprove the following pieces of evidence"
                 if player.user.dm_channel == None:
                     await player.user.create_dm()
-                text = "Characters:\n"
+                characters_text = ""
                 for card in player.cards:
                     if isinstance(card, Character):
-                        text += card.name + "\n"
-                text += "\nWeapons:\n"
+                        characters_text += "• " + card.name + "\n"
+                embed.add_field(name="People", value=characters_text, inline=True)
+                weapons_text = ""
                 for card in player.cards:
                     if isinstance(card, Weapon):
-                        text += card.name + "\n"
-                text += "\nRooms:\n"
+                        weapons_text += "• " + card.name + "\n"
+                embed.add_field(name="Weapons", value=weapons_text, inline=True)
+                rooms_txt = ""
                 for card in player.cards:
                     if isinstance(card, Room):
-                        text += card.name + "\n"            
-                embed.add_field(name="Your Hand", value=text)    
+                        rooms_txt += "• " + card.name + "\n"            
+                embed.add_field(name="Rooms", value=rooms_txt, inline=True)
+                embed.color = discord.Color.from_rgb(hex_to_rgb(player.character.colour)[0], hex_to_rgb(player.character.colour)[1], hex_to_rgb(player.character.colour)[2])
                 await player.user.dm_channel.send(embed=embed)
 
             await GameManager.getGame(ctx.channel).turn()
@@ -128,3 +138,9 @@ def load(bot: commands.Bot):
     @bot.command()
     async def testUserInput(ctx : commands.Context, *users : discord.User):
         await ctx.send(content=users[1].name)
+
+
+def hex_to_rgb(hex : str) -> "tuple[int]":
+    """Code credited to https://stackoverflow.com/questions/29643352/converting-hex-to-rgb-value-in-python"""
+    stripped = hex.lstrip("#")
+    return tuple(int(stripped[i:i+2], 16) for i in (0, 2, 4))
