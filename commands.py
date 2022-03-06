@@ -37,13 +37,17 @@ def load(bot: commands.Bot):
     async def start(ctx : commands.Context, *players : discord.User):
         if GameManager.hasGame(ctx.channel):
             await ctx.send("Game already in play in this channel.")
-        elif len(players) < 1 or len(players) > 6:
+        elif len(players) < 2 or len(players) > 6:
             await ctx.send("Invalid number of players")
         else:
             game = GameManager.createGame(ctx.channel)
             for player in players:
+                if player in [player.user for player in game.players]:
+                    await ctx.send("Cannot have more than one of the same player in one game!")
+                    GameManager.endGame(ctx.channel)
                 game.addPlayer(player)
             currentGame = GameManager.getGame(ctx.channel)
+
             currentGame.start()
             await ctx.send("Game started.\nPlease check your dm's to see your hand.")
 
