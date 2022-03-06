@@ -43,13 +43,24 @@ class Game(object):
     def currentPlayer(self) -> Player:
         return self.players[0]
 
-    def attemptDisprove(self) -> "list":
+    async def attemptDisprove(self):
+        playerMatch = None
+        cardsMatch = []
         for player in self.players[1:]:
             for card in self.accusations:
                 if card in [card.getName() for card in player.cards]:
-                    return [player, card]
-        return [None, None]
-
+                    playerMatch = player
+                    cardsMatch.append(card)
+        if len(cardsMatch) == 0:
+            await guessAction(None, player=self.currentPlayer())
+        else:
+            options = [discord.SelectOption(label=card, description=None, default=False) for card in cardsMatch]
+            optionsMenu = discord.ui.Select(custom_id="optionsMenu", placeholder=None, min_values=1, max_values=1, options=options, disabled=False, row=None)
+            cardsView = discord.ui.View(optionsMenu)
+            if (playerMatch.user.dm_channel is None):
+                playerMatch.user.create_dm()
+            cardsView.interaction_check = guessAction
+            await playerMatch.user.dm_channel.send(f"Choose a card to show {self.currentPlayer()}", view=cardsView)
 
     async def turn(self) -> bool:
         """Takes a turn, returns True if the game has been won."""
@@ -130,9 +141,28 @@ async def movementPressed(interaction : discord.Interaction):
     currentGame.nextPlayer()
     await currentGame.turn()
 
-async def guessAction(interaction : discord.Interaction):
-    game = GameManager.getGame(interaction.channel)
-    if interaction.data.get("custom_id") == "characterMenu":
+async def guessAction(interaction : discord.Interaction, player=None):
+    if interaction is not None and interaction.data.get("custom_id") != "optionsMenu":
+        game = GameManager.getGame(interaction.channel)
+    if interaction == None:
+        game = GameManager.gameOf(player.user)
+        await game.channel.send(f"Nobody can refute this guess.")
+        game.accusations = []
+        game.nextPlayer()
+        await game.turn()
+    elif interaction.data.get("custom_id") == "optionsMenu":
+        game = GameManager.gameOf(interaction.user)
+        player = list(filter(lambda player: player.user == interaction.user, game.players))[0]
+        if game.currentPlayer().user.dm_channel is None:
+            game.currentPlayer().user.create_dm()
+        await game.channel.send(f"{player.character.name} whispers to {game.currentPlayer().character.name}")
+        await game.currentPlayer().user.dm_channel.send(content="From " + player.character.name + ": I know it wasn't " + interaction.data.get("values")[0])
+        game.accusations = []
+        game.nextPlayer()
+        await game.turn()
+        await interaction.response.edit_message(view=None)
+
+    elif interaction.data.get("custom_id") == "characterMenu":
         if game.guessctr != 0:
             return
         game = GameManager.getGame(interaction.channel)
@@ -150,17 +180,8 @@ async def guessAction(interaction : discord.Interaction):
         game.accusations.append(game.currentPlayer().location.getName())
         game.guessctr = 0
         await interaction.channel.send(f"I think it was {game.accusations[0]} with the {game.accusations[1]} in the {game.accusations[2]}")
-        [player, card] = game.attemptDisprove()
-        if player is not None:
-            await interaction.channel.send(f"{player.character.name} whispers to {game.currentPlayer().character.name}")
-            await interaction.response.send_message(content=f"I know it wasn't {card}" ,ephemeral=True)
-        else:
-            await interaction.channel.send(f"Nobody can refute this guess.")
-            await interaction.response.defer()
-        game.accusations = []
-
-        game.nextPlayer()
-        await game.turn()
+        await game.attemptDisprove()
+        await interaction.response.defer()
     else:
         game.guessctr = 0
         characterMenu = discord.ui.Select(custom_id="characterMenu", placeholder=None, min_values=1, max_values=1, options=generateCharacterOptions(), disabled=False, row=None)
@@ -283,3 +304,11 @@ class GameManager(object):
     def endGame(channel : TextChannel):
         """Removes a Game instance from the GameManager."""
         GameManager.games.pop(channel)
+
+    def gameOf(user : discord.User):
+        """Returns a Game instance if a given user is in it."""
+        activeGames = list(filter(lambda game : user in [player.user for player in game.players], GameManager.games.values()))
+        if len(activeGames) > 0:
+            return activeGames[0]
+        else:
+            return None
