@@ -49,7 +49,12 @@ def load(bot: commands.Bot):
             currentGame = GameManager.getGame(ctx.channel)
 
             currentGame.start()
-            await ctx.send("Game started.\nPlease check your dm's to see your hand.")
+            startEmbed = discord.embeds.Embed()
+            startMessage = ""
+            for player in currentGame.players:
+                startMessage=startMessage+player.user.name+" as "+player.character.name+"\n"
+            startEmbed.add_field(name = "The game begins!", value=startMessage)
+            await ctx.send(embed=startEmbed) #"Game started.\nPlease check your dm's to see your hand.")
 
             # DMs players their hand
             
