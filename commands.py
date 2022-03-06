@@ -29,11 +29,18 @@ def load(bot: commands.Bot):
         embed.set_image(url=test.getImagePath())
         await ctx.send(embed=embed)
 
-    @bot.group()
+    @bot.group(
+        help = "Possible Commands",
+        brief="These are the commands for the game"
+    )
     async def game(ctx : commands.Context):
         pass
 
-    @game.command()
+    @game.command(
+        help = "start",
+        brief = "Use as !game start @player ... to start the game"
+
+    )
     async def start(ctx : commands.Context, *players : discord.User):
         if GameManager.hasGame(ctx.channel):
             await ctx.send("Game already in play in this channel.")
@@ -58,6 +65,7 @@ def load(bot: commands.Bot):
             startMessage = ""
             for player in currentGame.players:
                 startMessage=startMessage+player.user.name+" as "+player.character.name+"\n"
+            startMessage = startMessage
             startEmbed.add_field(name = "The game begins!", value=startMessage)
             await ctx.send(embed=startEmbed) #"Game started.\nPlease check your dm's to see your hand.")
 
@@ -89,7 +97,10 @@ def load(bot: commands.Bot):
 
             await GameManager.getGame(ctx.channel).turn()
 
-    @game.command()
+    @game.command(
+        help = "end",
+        brief = "Use as !game end to end a game"
+    )
     async def end(ctx : commands.Context):
         if GameManager.hasGame(ctx.channel):
             GameManager.endGame(ctx.channel)
@@ -97,13 +108,23 @@ def load(bot: commands.Bot):
         else:
             await ctx.send("There is no game in play in this channel.")
 
-    @game.command()
-    async def show(ctx : commands.Context):
-        await ctx.send(GameManager.getGame(ctx.channel))
-
-    @game.command()
+    @game.command(
+        help = "turn",
+        brief = "Use as !game turn to take your turn"
+    )
     async def turn(ctx : commands.Context):
         await GameManager.getGame(ctx.channel).turn()
+
+    @game.command(
+        help = "rules",
+        brief = "Use as !game rules to check the rules"
+    )
+    async def rules(ctx : commands.Context):
+        embed = discord.embeds.Embed()
+        embed.title = "Rules"
+        embedMessage = "Players take it in turns to choose one of the follwing options:\nAccuse - Pick a place, weapon and person and accuse them of being the criminal. Warning: a bad accusation will result in your loss.\nMove - You may choose a new location to move to.\nGuess - Pick a person and weapon and ask if anyone can prove they didn't commit the murder in your current room."
+        embed.add_field(name = "How to play:", value=embedMessage)
+        await ctx.send(embed=embed)
 
     @bot.command()
     async def maptest(ctx: commands.Context):
