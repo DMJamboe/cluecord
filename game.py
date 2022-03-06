@@ -60,7 +60,7 @@ class Game(object):
             if (playerMatch.user.dm_channel is None):
                 playerMatch.user.create_dm()
             cardsView.interaction_check = guessAction
-            await playerMatch.user.dm_channel.send(f"Choose a card to show {self.currentPlayer()}", view=cardsView)
+            await playerMatch.user.dm_channel.send(f"Choose a card to show {self.currentPlayer().user.name}", view=cardsView)
 
     async def turn(self) -> bool:
         """Takes a turn, returns True if the game has been won."""
@@ -151,16 +151,20 @@ async def guessAction(interaction : discord.Interaction, player=None):
         game.nextPlayer()
         await game.turn()
     elif interaction.data.get("custom_id") == "optionsMenu":
+        await interaction.response.edit_message(view=None)
         game = GameManager.gameOf(interaction.user)
         player = list(filter(lambda player: player.user == interaction.user, game.players))[0]
         if game.currentPlayer().user.dm_channel is None:
             game.currentPlayer().user.create_dm()
         await game.channel.send(f"{player.character.name} whispers to {game.currentPlayer().character.name}")
-        await game.currentPlayer().user.dm_channel.send(content="From " + player.character.name + ": I know it wasn't " + interaction.data.get("values")[0])
+        msg_embed = Embed()
+        msg_embed.title = f"{player.character.name} whispers to you..."
+        msg_embed.description = "I know it wasn't " + interaction.data.get("values")[0]
+        msg_embed.color = discord.Color.from_rgb(hex_to_rgb(player.character.colour)[0], hex_to_rgb(player.character.colour)[1], hex_to_rgb(player.character.colour)[2])
+        await game.currentPlayer().user.dm_channel.send(embed=msg_embed)
         game.accusations = []
         game.nextPlayer()
         await game.turn()
-        await interaction.response.edit_message(view=None)
 
     elif interaction.data.get("custom_id") == "characterMenu":
         if game.guessctr != 0:
@@ -246,12 +250,6 @@ async def accusationsMade(interaction : discord.Interaction) :
             await game.turn()
         game.accusations = []
 
-
-
-
-        
-
-
 def generateCharacterOptions() -> "list[discord.SelectOption()]" :
     """Generate select option list of all characters"""
     options = []
@@ -312,3 +310,8 @@ class GameManager(object):
             return activeGames[0]
         else:
             return None
+
+def hex_to_rgb(hex : str) -> "tuple[int]":
+    """Code credited to https://stackoverflow.com/questions/29643352/converting-hex-to-rgb-value-in-python"""
+    stripped = hex.lstrip("#")
+    return tuple(int(stripped[i:i+2], 16) for i in (0, 2, 4))

@@ -1,6 +1,6 @@
 Miss Scarlett,image/path,#FF0000
-Mrs Peacock,image/path,#0000FF
-Rev Green,image/path,#00FF00
-Professor Plumb,image/path,#6a0dad
-Colonel Mustard,image/path,#FFFF00
-Mrs White,image/path,"FFFFFF
+Mrs Peacock,image/path,#6bcde8
+Rev Green,image/path,#1e702d
+Professor Plumb,image/path,#471b57
+Colonel Mustard,image/path,#dbc12c
+Mrs White,image/path,#FFFFFF
